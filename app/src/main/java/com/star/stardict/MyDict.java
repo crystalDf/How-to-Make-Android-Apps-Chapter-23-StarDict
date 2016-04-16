@@ -13,7 +13,7 @@ public class MyDict {
 
     public static final String[] KEY = {
             "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
-            "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "-"
+            "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
     };
 
     public static final int MAX_WORD_LENGTH = 256;
@@ -187,18 +187,20 @@ public class MyDict {
 
     public void translate() {
         String word = getWordToTranslate();
+        MyWord myWord = null;
 
         if (word.length() > 0) {
             try {
                 mIdxInputStream.reset();
-                long skip = mIdxInputStream.skip(mKeyOffset.get(
-                        word.toLowerCase().substring(0, 1)));
-                System.out.println("skip: " + skip);
+                Long toSkip = mKeyOffset.get(word.toLowerCase().substring(0, 1));
+                if (toSkip != null) {
+                    long skip = mIdxInputStream.skip(toSkip);
+                    System.out.println("skip: " + skip);
+                    myWord = searchTargetWord(word);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            MyWord myWord = searchTargetWord(word);
 
             if (myWord != null) {
                 setWordTranslation(getTranslation(myWord.getOffset(), myWord.getLength()));
@@ -216,7 +218,7 @@ public class MyDict {
             mDictInputStream.reset();
             if (mDictInputStream.available() < ((long) offset + (long) length)) {
                 System.out.println("No so much value data!");
-                return "Dict file read error!";
+                return null;
             }
 
             long skip = mDictInputStream.skip(offset);
@@ -232,10 +234,9 @@ public class MyDict {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Dict file read error!");
-            bytes = null;
         }
 
-        return (bytes != null) ? translation : null;
+        return translation;
     }
 
 }

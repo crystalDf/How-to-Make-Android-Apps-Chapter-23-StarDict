@@ -1,7 +1,6 @@
 package com.star.stardict;
 
 import android.annotation.TargetApi;
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
@@ -63,13 +62,13 @@ public class MainActivity extends AppCompatActivity {
         final ClipboardManager clipboardManager = (ClipboardManager)
                 getSystemService(Context.CLIPBOARD_SERVICE);
 
-        clipboardManager.setPrimaryClip(ClipData.newPlainText("", ""));
         clipboardManager.addPrimaryClipChangedListener(
                 new ClipboardManager.OnPrimaryClipChangedListener() {
 
                     @Override
                     public void onPrimaryClipChanged() {
-                        mWordToTranslateEditText.setText(clipboardManager.getText());
+                        mWordToTranslateEditText.setText(
+                                clipboardManager.getPrimaryClip().getItemAt(0).getText());
                     }
                 });
     }
