@@ -2,7 +2,9 @@ package com.star.stardict;
 
 import android.annotation.TargetApi;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -69,6 +71,14 @@ public class MainActivity extends AppCompatActivity {
                     public void onPrimaryClipChanged() {
                         mWordToTranslateEditText.setText(
                                 clipboardManager.getPrimaryClip().getItemAt(0).getText());
+
+                        Intent intent = new Intent();
+                        ComponentName componentName = new ComponentName("com.star.stardict", "" +
+                                "com.star.stardict.MainActivity");
+                        intent.setComponent(componentName);
+                        intent.setAction("android.intent.action.MAIN");
+
+                        startActivity(intent);
                     }
                 });
     }
