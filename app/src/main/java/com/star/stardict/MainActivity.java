@@ -1,14 +1,10 @@
 package com.star.stardict;
 
-import android.annotation.TargetApi;
-import android.content.ClipboardManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private Button mTranslateButton;
     private TextView mWordTranslatedTextView;
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,26 +56,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final ClipboardManager clipboardManager = (ClipboardManager)
-                getSystemService(Context.CLIPBOARD_SERVICE);
+        Intent intent = getIntent();
 
-        clipboardManager.addPrimaryClipChangedListener(
-                new ClipboardManager.OnPrimaryClipChangedListener() {
+        if (intent != null) {
+            CharSequence content = intent.getCharSequenceExtra(getString(R.string.content));
+            if (!TextUtils.isEmpty(content)) {
+                mWordToTranslateEditText.setText(content);
+                mTranslateButton.performClick();
+            }
+        }
 
-                    @Override
-                    public void onPrimaryClipChanged() {
-                        mWordToTranslateEditText.setText(
-                                clipboardManager.getPrimaryClip().getItemAt(0).getText());
-
-                        Intent intent = new Intent();
-                        ComponentName componentName = new ComponentName("com.star.stardict", "" +
-                                "com.star.stardict.MainActivity");
-                        intent.setComponent(componentName);
-                        intent.setAction("android.intent.action.MAIN");
-
-                        startActivity(intent);
-                    }
-                });
+        ListenClipboardService.start(this);
     }
 
     @Override
