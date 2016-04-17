@@ -21,7 +21,7 @@ public final class ListenClipboardService extends Service {
                         return;
                     }
 
-                    Intent intent = new Intent(ListenClipboardService.this, MainActivity.class);
+                    Intent intent = new Intent(ListenClipboardService.this, StarDictActivity.class);
                     intent.putExtra(getString(R.string.content), content);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

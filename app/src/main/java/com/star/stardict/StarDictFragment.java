@@ -1,18 +1,22 @@
 package com.star.stardict;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity {
+
+public class StarDictFragment extends Fragment {
 
     private MyDict mMyDict;
 
@@ -23,16 +27,21 @@ public class MainActivity extends AppCompatActivity {
     private Button mTranslateButton;
     private TextView mWordTranslatedTextView;
 
+    public static StarDictFragment newInstance() {
+        return new StarDictFragment();
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_star_dict, container, false);
 
         File externalFilesDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
 
         if (externalFilesDir == null) {
-            return;
+            return view;
         }
 
         mIdxFile =  new File(externalFilesDir, "Mydict.idx");
@@ -40,9 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
         mMyDict = new MyDict(mIdxFile, mDictFile);
 
-        mWordToTranslateEditText = (EditText) findViewById(R.id.word_to_translate);
-        mTranslateButton = (Button) findViewById(R.id.translate);
-        mWordTranslatedTextView = (TextView) findViewById(R.id.word_translation);
+        mWordToTranslateEditText = (EditText) view.findViewById(R.id.word_to_translate);
+        mTranslateButton = (Button) view.findViewById(R.id.translate);
+        mWordTranslatedTextView = (TextView) view.findViewById(R.id.word_translation);
 
         mTranslateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = getIntent();
+        Intent intent = getActivity().getIntent();
 
         if (intent != null) {
             CharSequence content = intent.getCharSequenceExtra(getString(R.string.content));
@@ -66,12 +75,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        ListenClipboardService.start(this);
+        ListenClipboardService.start(getActivity());
+
+        return view;
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
 
         if (mMyDict != null) {
             mMyDict.destroy();
